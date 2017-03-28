@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style media="screen">
+        body {
+            width: 100%;
+            height: 700px;
+            margin: 0;
+            padding: 0;
+            position: relative;
+            background: linear-gradient(to right, #d6ae7b, #eacda3);
+        }
+
+        .instructions {
+            width: 50%;
+            font-size: 1.5em;
+            position: absolute;
+            top: 20%;
+            left: 30%;
+        }
+
+        ul li {
+            padding: 0.5em;
+        }
+
+        .first-button {
+            width: 150px;
+            padding: 0.5em;
+            border: 1px solid green;
+            margin-top: 2em;
+            margin-left: 20em;
+            font-size: 0.8em;
+            background-color: green;
+            border-radius: 20px;
+            box-shadow: 1px 1px 1px 1px black;
+        }
+
+        .first-button:active {
+            box-shadow: none;
+        }
+
+        .first-button:focus {
+            outline: none;
+        }
+
+        header {
+            height: 20%;
+            display: flex;
+        }
+
+        .progress-bar {
+            width: 20%;
+            height: 50px;
+            text-align: center;
+            margin: auto;
+            font-size: 2em;
+        }
+
+        .main-div {
+            height: 80%;
+            display: flex;
+        }
+
+        .content {
+            width: 50%;
+            height: 70%;
+            margin: auto;
+        }
+
+        .question {
+            height: 10%;
+        }
+
+        h3 {
+            margin-left: 1em;
+        }
+
+        .options {
+            height: 50%;
+        }
+
+        form {
+            display: flex;
+            flex-flow: column;
+            width: 95%;
+            height: 80%;
+            margin: 2em auto;
+        }
+
+        span {
+            margin: 0.5em 0;
+            width: 25%;
+        }
+
+        .main-button {
+            width: 100px;
+            padding: 0.7em;
+            border: 1px solid green;
+            margin-left: 40em;
+            font-size: 1em;
+            background-color: green;
+            border-radius: 20px;
+            box-shadow: 1px 1px 1px 1px black;
+        }
+
+        .main-button:active {
+            box-shadow: none;
+        }
+
+        .main-button:focus {
+            outline: none;
+        }
+    </style>
+
+</head>
+
+<body>
+
+    <ul class="instructions">
+        <li>Each question only has one right answer</li>
+        <li>You can only continue if you have chosen an option</li>
+        <li>You can't come back to older questions</li>
+        <li>Press Next once you are ready to move on to next question</li>
+        <li>Maximum allowed time for this entire quiz is 30sec</li>
+        <button type="button" class="first-button">Start Quiz</button>
+    </ul>
+
+    <header>
+        <div class="progress-bar">Let's Quiz You!</div>
+    </header>
+
+    <div class="main-div">
+        <div class="content">
+            <div class="question">
+                <h3></h3>
+            </div>
+            <div class="options">
+                <form action="">
+                    <span id="span1"><input type="radio" id="option1" name="lol"><label for="option1"></label>
+                    </span>
+
+                    <span id="span2"><input type="radio" id="option2" name="lol"><label for="option2"></label>
+                    </span>
+
+                    <span id="span3"><input type="radio" id="option3" name="lol"><label for="option3"></label>
+                    </span>
+
+                    <span id="span4"><input type="radio" id="option4" name="lol"><label for="option4"></label>
+                    </span>
+                </form>
+            </div>
+            <button type="button" class="main-button">Next</button>
+        </div>
+
+    </div>
+
+    <script type="text/javascript">
+        const questionArea = document.querySelector(".question h3");
+        var firstButton = document.querySelector(".first-button");
+        const instructions = document.querySelector(".instructions");
+        const header = document.querySelector("header");
+        var progressBar = document.querySelector(".progress-bar");
+        const maindiv = document.querySelector(".main-div");
+        maindiv.style.display = "none";
+        var dataStorage;
+
+        //---------------------------------------------------------------
+        //---This section is for start button that brings first question-
+        // --------------------------------------------------------------
+
+        firstButton.addEventListener("click", beginQuiz);
+
+        function beginQuiz() {
+            var request = new XMLHttpRequest();
+            request.open("GET", "https://gist.githubusercontent.com/nishkaush/8f2aaaecfc2b9aa1ae0cd15d0e4b4b9c/raw/81267bb948f4f6b4e1a61e3fff5312cfeadad1f5/gistfile1.txt");
+            request.onload = function() {
+                dataStorage = JSON.parse(request.responseText);
+                console.log(dataStorage);
+                getFirstPage();
+            }
+            request.send();
+        }
+
+        function getFirstPage() {
+            setTimeout(function(e) {
+                nextButton.removeEventListener("click", getMorePages);
+                questionArea.innerText = "";
+                questionArea.innerText = "Time has run out! Please try again by refreshing the page or close the tab to exit.";
+                document.querySelector(".options form").style.display = "none";
+                nextButton.style.display = "none";
+            }, 30000);
+            maindiv.style.display = "block";
+            instructions.style.display = "none";
+            progressBar.innerText = `Question 1 of 3`;
+            let randomIndex = Math.floor(Math.random() * 5);
+            var question = dataStorage[randomIndex].question;
+            questionArea.innerText = "";
+            questionArea.insertAdjacentHTML("afterbegin", question);
+
+            var option1 = document.querySelector("label[for='option1']");
+            option1.innerText = dataStorage[randomIndex].option1;
+            const option2 = document.querySelector("label[for='option2']");
+            option2.innerText = dataStorage[randomIndex].option2;
+            const option3 = document.querySelector("label[for='option3']");
+            option3.innerText = dataStorage[randomIndex].option3;
+            const option4 = document.querySelector("label[for='option4']");
+            option4.innerText = dataStorage[randomIndex].option4;
+
+            var whichChecked = [].slice.call(document.querySelectorAll("span"));
+
+            whichChecked.forEach(function(e) {
+                e.addEventListener("click", rightWrong);
+            });
+
+            function rightWrong() {
+                if (randomIndex === 0 && this.id === "span1") {
+                    this.style.outline = "3px solid lime";
+                } else if (randomIndex === 1 && this.id === "span3") {
+                    this.style.outline = "3px solid lime";
+                } else if (randomIndex === 2 && this.id === "span3") {
+                    this.style.outline = "3px solid lime";
+                } else if (randomIndex === 3 && this.id === "span4") {
+                    this.style.outline = "3px solid lime";
+                } else if (randomIndex === 4 && this.id === "span2") {
+                    this.style.outline = "3px solid lime";
+                } else {
+                    this.style.outline = "3px solid red";
+                }
+            }
+        }
+
+
+        // -----------------------------------------------------------------
+        // ----the following code is for the next button click event------
+        // -----------------------------------------------------------------
+
+        const nextButton = document.querySelector(".main-button");
+        nextButton.addEventListener("click", getMorePages);
+        var counter = 0;
+
+        function getMorePages() {
+            var radios = document.querySelectorAll("input[name='lol']");
+            var radioCollection = [].slice.call(radios);
+            var checkedRadio = radioCollection.some(e => e.checked === true);
+
+
+            if (counter <= 1 && checkedRadio === true) {
+                counter++;
+                maindiv.style.display = "block";
+                instructions.style.display = "none";
+                var request = new XMLHttpRequest();
+                request.open("GET", "https://gist.githubusercontent.com/nishkaush/8f2aaaecfc2b9aa1ae0cd15d0e4b4b9c/raw/81267bb948f4f6b4e1a61e3fff5312cfeadad1f5/gistfile1.txt");
+                request.onload = function() {
+                    dataStorage = "";
+                    dataStorage = JSON.parse(request.responseText);
+                    progressBar.innerText = "";
+                    progressBar.innerText = `Question ${counter+1} of 3`;
+
+                    let randomIndex = Math.floor(Math.random() * 5);
+                    var question = dataStorage[randomIndex].question;
+                    questionArea.innerText = "";
+                    questionArea.insertAdjacentHTML("afterbegin", question);
+
+                    var option1 = document.querySelector("label[for='option1']");
+                    document.getElementById("option1").checked = false;
+                    option1.innerText = dataStorage[randomIndex].option1;
+
+                    var option2 = document.querySelector("label[for='option2']");
+                    document.getElementById("option2").checked = false;
+                    option2.innerText = dataStorage[randomIndex].option2;
+
+                    var option3 = document.querySelector("label[for='option3']");
+                    document.getElementById("option3").checked = false;
+                    option3.innerText = dataStorage[randomIndex].option3;
+
+                    var option4 = document.querySelector("label[for='option4']");
+                    document.getElementById("option4").checked = false;
+                    option4.innerText = dataStorage[randomIndex].option4;
+
+                    var whichChecked = [].slice.call(document.querySelectorAll("span"));
+
+                    whichChecked.forEach(function(e) {
+                        e.addEventListener("click", rightWrong);
+                        e.style.outline = "none";
+                    });
+
+                    function rightWrong() {
+                        if (randomIndex === 0 && this.id === "span1") {
+                            this.style.outline = "3px solid lime";
+                        } else if (randomIndex === 1 && this.id === "span3") {
+                            this.style.outline = "3px solid lime";
+                        } else if (randomIndex === 2 && this.id === "span3") {
+                            this.style.outline = "3px solid lime";
+                        } else if (randomIndex === 3 && this.id === "span4") {
+                            this.style.outline = "3px solid lime";
+                        } else if (randomIndex === 4 && this.id === "span2") {
+                            this.style.outline = "3px solid lime";
+                        } else {
+                            this.style.outline = "3px solid red";
+                        }
+                    }
+                }
+                request.send();
+            } else {
+
+                if (counter <= 1 && checkedRadio === false) {
+                    alert("Please choose an answer before continuing");
+                }
+                if (counter > 1) {
+                    questionArea.innerText = "Congratulations! You have finished the quiz. Close the tab to exit.";
+                    document.querySelector(".options form").style.display = "none";
+                    nextButton.style.display = "none";
+                }
+
+            }
+
+        }
+    </script>
+</body>
+
+</html>
